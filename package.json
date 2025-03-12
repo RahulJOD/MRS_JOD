@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "git push origin main && ssh user@server 'cd /var/www/project && git pull origin main && npm install && npm run build && pm2 restart next-app'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",
