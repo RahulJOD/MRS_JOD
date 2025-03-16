@@ -1,40 +1,26 @@
 'use client';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 
-import { FaChevronRight, FaHospital } from 'react-icons/fa';
-import { FaPerson } from 'react-icons/fa6';
-import { MdEmergency } from 'react-icons/md';
-import { FiPhoneCall } from 'react-icons/fi';
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { toast } from '@/components/ui/Toast';
-import { useSession } from 'next-auth/react';
-import { doc, getDoc } from 'firebase/firestore/lite';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { db } from '@/config/firebase';
-import Greeting from '@/components/dashboard/Greeting';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore/lite';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import { BiLoaderAlt } from 'react-icons/bi';
 
-const Emergency = () => {
+const EmergencyData = () => {
   const { data } = useSession();
-  const userFirstName = data?.user?.name ? data.user.name.split(' ')[0] : '';
-
   const [loading, setLoading] = useState(false);
-
+  
   const [emergencyData, setEmergencyData] = useState({
     name: '',
     contact: '',
@@ -45,6 +31,7 @@ const Emergency = () => {
     medications: '',
     allergiesAndReactions: '',
     remarks: '',
+    location: { lat: null, lon: null },
   });
 
   const loadEmergencyData = async (data) => {
@@ -63,54 +50,85 @@ const Emergency = () => {
     loadEmergencyData(data);
   }, [data]);
 
-  const handleCall = (phoneNumber) => {
-    window.location.href = `tel:${phoneNumber}`;
+  const shareLocation = async () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setEmergencyData((prev) => ({
+          ...prev,
+          location: { lat: latitude, lon: longitude },
+        }));
+
+        const docRef = doc(db, 'emergencyData', data?.user?.email);
+        await setDoc(docRef, { ...emergencyData, location: { lat: latitude, lon: longitude } }, { merge: true });
+
+        toast.success('Location shared successfully!');
+      },
+      (error) => {
+        toast.error('Failed to get location: ' + error.message);
+      }
+    );
   };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const docRef = collection(db, 'emergencyData');
+    setLoading(true);
+    setDoc(doc(docRef, data?.user?.email), { ...emergencyData })
+      .then(() => {
+        window.location.href = '/dashboard';
+      })
+      .catch(() => {
+        toast.error('Something went wrong');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   return (
     <div>
-      <Greeting userFirstName={userFirstName} />
-      <h3 className='text-lg mb-2'>Emergency Contacts</h3>
-      <div className='border shadow-sm border-gray-200 rounded-xl'>
-        <div className='cursor-pointer p-3 text-center w-full flex flex-row justify-between items-center gap-2 rounded-xl'>
-          <div className='flex flex-row justify-start items-center gap-2'>
-            <FaPerson className='text-lg text-emerald-600' />
-            Family
-          </div>
-          <button onClick={() => handleCall(emergencyData?.contact)}>
-            <FiPhoneCall className='text-lg' />
-          </button>
+      <h1 className='mb-2'>Your Emergency Data</h1>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4 accent-pink-400'>
+        <div className='grid w-full items-center gap-1.5'>
+          <Label htmlFor='name'>Name</Label>
+          <Input
+            type='text'
+            id='name'
+            disabled={loading}
+            value={emergencyData.name}
+            onChange={(e) => setEmergencyData({ ...emergencyData, name: e.target.value })}
+          />
         </div>
-        <hr />
-        <div className='cursor-pointer p-3 text-center w-full flex flex-row justify-between items-center gap-2 rounded-xl'>
-          <div className='flex flex-row justify-start items-center gap-2'>
-            <MdEmergency className='text-lg text-rose-600' />
-            Emergency
-          </div>
-          <button onClick={() => handleCall('7827170170')}>
-            <FiPhoneCall className='text-lg' />
-          </button>
+        <div className='grid w-full items-center gap-1.5'>
+          <Label htmlFor='contact'>Contact</Label>
+          <Input
+            type='tel'
+            id='contact'
+            disabled={loading}
+            value={emergencyData.contact}
+            onChange={(e) => setEmergencyData({ ...emergencyData, contact: e.target.value })}
+          />
         </div>
-        <hr />
-        <div className='cursor-pointer p-3 text-center w-full flex flex-row justify-between items-center gap-2 rounded-xl'>
-          <div className='flex flex-row justify-start items-center gap-2'>
-            <FaHospital className='text-lg text-amber-600' />
-            Hospital
-          </div>
-          <button onClick={() => handleCall('108')}>
-            <FiPhoneCall className='text-lg' />
-          </button>
-        </div>
-      </div>
-
-      <Link
-        href='/emergency-data'
-        className='cursor-pointer border shadow-sm border-gray-200 rounded-xl font-semibold px-2 py-3 text-center w-full flex flex-row justify-start items-center gap-2'
-      >
-        View/Update Emergency Data
-      </Link>
+        
+        <button
+          type='button'
+          disabled={loading}
+          className='bg-green-500 text-white font-semibold p-2 w-full flex justify-center items-center gap-2 rounded-md'
+          onClick={async () => {
+            await shareLocation();
+            window.location.href = 'tel:' + emergencyData.contact;
+          }}
+        >
+          {loading && <BiLoaderAlt className='text-xl animate-spin' />} Call Emergency Contact
+        </button>
+      </form>
     </div>
   );
 };
 
-export default Emergency;
+export default EmergencyData;

@@ -9,54 +9,60 @@ import { MdEmergency, MdWaterDrop } from "react-icons/md";
 import { AiFillSafetyCertificate } from "react-icons/ai";
 import { RiMentalHealthFill } from "react-icons/ri";
 import { HiChatBubbleBottomCenterText, HiUserGroup } from "react-icons/hi2";
-import { BiSolidAlarmExclamation } from "react-icons/bi";
 import { GiCupcake } from "react-icons/gi";
 import { MdFactCheck } from "react-icons/md";
 import Link from "next/link";
+import { useLocation } from "@/hooks/useLocation"; // ✅ Correct Path
+ // ✅ Correct path
+import LocationButton from "@/components/LocationButton"; // ✅ Correct Path
+
+
 
 export default function Dashboard() {
+
+  function sendSOSMessage() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const message = `Emergency! My location: https://maps.google.com/?q=${latitude},${longitude}`;
+          const phoneNumber = "1234567890"; // Replace with the actual phone number
+
+          // Open SMS app with prefilled message
+          window.location.href = `sms:${phoneNumber}?body=${encodeURIComponent(
+            message
+          )}`;
+        },
+        (error) => {
+          alert("Failed to get location. Please enable location services.");
+          console.error(error);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported on this device.");
+    }
+  }
   const { data } = useSession();
   const userFirstName = data?.user?.name ? data.user.name.split(" ")[0] : "";
+
+  const { location, getLiveLocation } = useLocation(); // ✅ Call useLocation
 
   const menuItems = [
     { color: "rose", label: "Cycle", href: "/tracker", icon: MdWaterDrop },
     { color: "amber", label: "Journal", href: "/journal", icon: FaBookOpen },
-    {
-      color: "emerald",
-      label: "Fact Check",
-      href: "/fact-check",
-      icon: MdFactCheck,
-    },
-    {
-      color: "fuchsia",
-      label: "Knowledge",
-      href: "/knowledge",
-      icon: RiMentalHealthFill,
-    },
+    { color: "emerald", label: "Fact Check", href: "/fact-check", icon: MdFactCheck },
+    { color: "fuchsia", label: "Knowledge", href: "/knowledge", icon: RiMentalHealthFill },
     { color: "orange", label: "Community", href: "/social", icon: HiUserGroup },
+    { color: "sky", label: "Sakhi Bot", href: "/chat", icon: HiChatBubbleBottomCenterText },
+    { color: "green", label: "Safety", href: "/safety", icon: AiFillSafetyCertificate },
+    { color: "pink", label: "Emergency", href: "/emergency", icon: MdEmergency },
+    { color: "cyan", label: "de", href: "https://www.swiggy.com/desserts-restaurants-near-me", icon: GiCupcake },
     {
-      color: "sky",
-      label: "Sakhi Bot",
-      href: "/chat",
-      icon: HiChatBubbleBottomCenterText,
-    },
-    {
-      color: "green",
-      label: "Safety",
-      href: "/safety",
-      icon: AiFillSafetyCertificate,
-    },
-    {
-      color: "pink",
-      label: "Emergency",
-      href: "/emergency",
-      icon: MdEmergency,
-    },
-    {
-      color: "cyan",
-      label: "Desserts",
-      href: "https://www.swiggy.com/desserts-restaurants-near-me",
+      color: "red",
+      label: "Send SOS",
+      href: "#",
       icon: GiCupcake,
+      action: sendSOSMessage, // Function to send SMS
     },
   ];
 
@@ -66,43 +72,56 @@ export default function Dashboard() {
         <Greeting userFirstName={userFirstName} />
         <hr className="w-full opacity-20" />
       </div>
+
       {/* wwyltdt hero */}
       <div className="flex my-4">
         <div className="w-6/12 text-center flex flex-col justify-center items-center text-base font-semibold translate-x-8 text-[#DB6542]">
           What Would You Like
-          <span className="text-[#389F8A]">to do Today?</span>
+          <span className="text-[#389F8A]"> to do Today?</span>
         </div>
         <div className="w-6/12 overflow-hidden">
-          <Image
-            src={"/assets/dashboard/think.png"}
-            width={998}
-            height={622}
-            className="translate-x-10"
-          />
+          <Image src={"/assets/dashboard/think.png"} width={998} height={622} className="translate-x-10" />
         </div>
       </div>
+
       {/* Grid Menu */}
       <div className="grid grid-cols-3 gap-4">
         {menuItems.map((item) => (
           <GridElement key={item.label} data={item} />
         ))}
       </div>
+
+      {/* ✅ Live Location Section */}
+      <div className="mt-6 p-6 border border-gray-200 rounded-lg shadow-sm">
+  <h2 className="text-xl font-semibold mb-4">Live Location</h2>
+  <LocationButton/>
+
+
+  {location && (
+    <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100">
+      <p><strong>Latitude:</strong> {location.latitude}</p>
+      <p><strong>Longitude:</strong> {location.longitude}</p>
+      <p><strong>Timestamp:</strong> {location.timestamp}</p>
+    </div>
+  )}
+      </div>
     </div>
   );
 }
 
-function GridElement({ key, data }) {
+function GridElement({ data }) {
   return (
-    <Link href={data.href}>
-      <div
-        key={key}
-        className={`w-full aspect-square rounded-md flex flex-col justify-center items-center shadow-md gap-1 bg-gradient-to-br from-${data.color}-100 to-${data.color}-200 text-${data.color}-950`}
-      >
-        {React.createElement(data.icon, {
-          className: `w-1/2 h-1/3 fill-${data.color}-900`,
-        })}
-        <span className="font-semibold">{data.label}</span>
-      </div>
-    </Link>
+    <div
+      onClick={data.action ? data.action : null}
+      className={`w-full aspect-square rounded-md flex flex-col justify-center items-center shadow-md gap-1 bg-gradient-to-br from-${data.color}-100 to-${data.color}-200 text-${data.color}-950`}
+    >
+      {React.createElement(data.icon, {
+        className: `w-1/2 h-1/3 fill-${data.color}-900`,
+      })}
+      <span className="font-semibold">{data.label}</span>
+    </div>
   );
 }
+console.log("LocationButton:", LocationButton);
+
+console.log("Rendering LocationButton in Dashboard");

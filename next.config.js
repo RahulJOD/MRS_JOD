@@ -14,6 +14,15 @@ const withPWA = require("next-pwa")({
   register: true, // Register the PWA service worker
   skipWaiting: true, // Skip waiting for service worker activation
 });
+module.exports = {
+  experimental: {
+    appDir: true, // Yeh app router enable karega
+  },
+  webpack: (config) => {
+    config.resolve.fallback = { undici: false };
+    return config;
+  },
+};
 
 // Export the combined configuration for Next.js with PWA support
 module.exports = withPWA(nextConfig);
