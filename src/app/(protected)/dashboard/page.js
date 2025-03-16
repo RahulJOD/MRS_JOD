@@ -26,7 +26,7 @@ export default function Dashboard() {
         (position) => {
           const { latitude, longitude } = position.coords;
           const message = `Emergency! My location: https://maps.google.com/?q=${latitude},${longitude}`;
-          const phoneNumber = "1234567890"; // Replace with the actual phone number
+          const phoneNumber = "8010355996"; // Replace with the actual phone number
 
           // Open SMS app with prefilled message
           window.location.href = `sms:${phoneNumber}?body=${encodeURIComponent(
