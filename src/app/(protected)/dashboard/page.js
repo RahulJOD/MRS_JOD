@@ -53,15 +53,15 @@ export default function Dashboard() {
     { color: "emerald", label: "Fact Check", href: "/fact-check", icon: MdFactCheck },
     { color: "fuchsia", label: "Knowledge", href: "/knowledge", icon: RiMentalHealthFill },
     { color: "orange", label: "Community", href: "/social", icon: HiUserGroup },
-    { color: "sky", label: "Sakhi Bot", href: "/chat", icon: HiChatBubbleBottomCenterText },
+    { color: "sky", label: "SHE-SAFE", href: "/chat", icon: HiChatBubbleBottomCenterText },
     { color: "green", label: "Safety", href: "/safety", icon: AiFillSafetyCertificate },
     { color: "pink", label: "Emergency", href: "/emergency", icon: MdEmergency },
-    { color: "cyan", label: "de", href: "https://www.swiggy.com/desserts-restaurants-near-me", icon: GiCupcake },
+    { color: "cyan", label: "dessert", href: "https://www.swiggy.com/desserts-restaurants-near-me", icon: GiCupcake },
     {
-      color: "red",
-      label: "Send SOS",
+      color: "amber",
+      label: "Send Location",
       href: "#",
-      icon: GiCupcake,
+      icon: MdEmergency,
       action: sendSOSMessage, // Function to send SMS
     },
   ];
@@ -91,20 +91,6 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* ✅ Live Location Section */}
-      <div className="mt-6 p-6 border border-gray-200 rounded-lg shadow-sm">
-  <h2 className="text-xl font-semibold mb-4">Live Location</h2>
-  <LocationButton/>
-
-
-  {location && (
-    <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100">
-      <p><strong>Latitude:</strong> {location.latitude}</p>
-      <p><strong>Longitude:</strong> {location.longitude}</p>
-      <p><strong>Timestamp:</strong> {location.timestamp}</p>
-    </div>
-  )}
-      </div>
     </div>
   );
 }
