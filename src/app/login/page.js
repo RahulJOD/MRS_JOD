@@ -7,7 +7,7 @@ import React from "react";
 export default function Login() {
   return (
     <div className="flex flex-col items-center gap-10 mt-10 relative">
-      <p className="text-3xl font-semibold">Login to Sakhi</p>
+      <p className="text-3xl font-semibold">Login to SHE-SAFE</p>
       <div className="">
         <Image src="/assets/login/login.jpg" width={500} height={500} />
       </div>

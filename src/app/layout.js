@@ -8,9 +8,9 @@ export const open_sans = Open_Sans({ subsets: ["latin"] });
 const exo2 = Exo_2({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Sakhi: Wellness Friend",
+  title: "SHE-SAFE",
   description:
-    "Sakhi, a mobile-first app tailored for women, encompasses daily journals, safety features, community, and holistic health tools. Elevate your well-being with Sakhi, your dedicated companion for empowerment, connection, and growth.",
+    "SHE-SAFE, a mobile-first app tailored for women, encompasses daily journals, safety features, community, and holistic health tools. Elevate your well-being with Sakhi, your dedicated companion for empowerment, connection, and growth.",
   lang: "en",
   icons: [
     { rel: "apple-touch-icon", url: "icons/icon-128x128.png" },
