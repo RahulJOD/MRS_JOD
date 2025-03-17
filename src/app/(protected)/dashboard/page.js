@@ -48,7 +48,7 @@ export default function Dashboard() {
   const { location, getLiveLocation } = useLocation(); // ✅ Call useLocation
 
   const menuItems = [
-    { color: "rose", label: "Cycle", href: "/tracker", icon: MdWaterDrop },
+    { color: "rose", label: "Medicals", href: "/medicalsNearMe", icon: MdEmergency },
     { color: "amber", label: "Journal", href: "/journal", icon: FaBookOpen },
     { color: "emerald", label: "Fact Check", href: "/fact-check", icon: MdFactCheck },
     { color: "fuchsia", label: "Knowledge", href: "/knowledge", icon: RiMentalHealthFill },
@@ -96,18 +96,30 @@ export default function Dashboard() {
 }
 
 function GridElement({ data }) {
-  return (
-    <div
-      onClick={data.action ? data.action : null}
+  return data.action ? (
+    <button
+      onClick={data.action}
       className={`w-full aspect-square rounded-md flex flex-col justify-center items-center shadow-md gap-1 bg-gradient-to-br from-${data.color}-100 to-${data.color}-200 text-${data.color}-950`}
     >
       {React.createElement(data.icon, {
         className: `w-1/2 h-1/3 fill-${data.color}-900`,
       })}
       <span className="font-semibold">{data.label}</span>
-    </div>
+    </button>
+  ) : (
+    <Link href={data.href}>
+      <div
+        className={`w-full aspect-square rounded-md flex flex-col justify-center items-center shadow-md gap-1 bg-gradient-to-br from-${data.color}-100 to-${data.color}-200 text-${data.color}-950`}
+      >
+        {React.createElement(data.icon, {
+          className: `w-1/2 h-1/3 fill-${data.color}-900`,
+        })}
+        <span className="font-semibold">{data.label}</span>
+      </div>
+    </Link>
   );
 }
+
 console.log("LocationButton:", LocationButton);
 
 console.log("Rendering LocationButton in Dashboard");
