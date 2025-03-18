@@ -48,22 +48,16 @@ export default function Dashboard() {
   const { location, getLiveLocation } = useLocation(); // ✅ Call useLocation
 
   const menuItems = [
-    { color: "rose", label: "Medicals", href: "/medicalsNearMe", icon: MdEmergency },
-    { color: "amber", label: "Journal", href: "/journal", icon: FaBookOpen },
+    { color: "rose", label: "Medical Emergency", href: "/medicalsNearMe", icon: MdEmergency },
+    { color: "amber", label: "Notes", href: "/journal", icon: FaBookOpen },
     { color: "emerald", label: "Fact Check", href: "/fact-check", icon: MdFactCheck },
     { color: "fuchsia", label: "Knowledge", href: "/knowledge", icon: RiMentalHealthFill },
-    { color: "orange", label: "Community", href: "/social", icon: HiUserGroup },
+    { color: "orange", label: "Safety Techniques", href: "/social", icon: HiUserGroup },
     { color: "sky", label: "SHE-SAFE", href: "/chat", icon: HiChatBubbleBottomCenterText },
-    { color: "green", label: "Safety", href: "/safety", icon: AiFillSafetyCertificate },
-    { color: "pink", label: "Emergency", href: "/emergency", icon: MdEmergency },
+    { color: "green", label: "HelpLine", href: "/safety", icon: AiFillSafetyCertificate },
+    { color: "pink", label: "Threats", href: "/emergency", icon: MdEmergency },
     { color: "cyan", label: "dessert", href: "https://www.swiggy.com/desserts-restaurants-near-me", icon: GiCupcake },
-    {
-      color: "amber",
-      label: "Send Location",
-      href: "#",
-      icon: MdEmergency,
-      action: sendSOSMessage, // Function to send SMS
-    },
+    { color: "amber",label: "Send Location",href: "#", icon: MdEmergency, action: sendSOSMessage },
   ];
 
   return (
